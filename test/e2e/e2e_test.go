@@ -269,7 +269,7 @@ func httpGet(host, path string) (int, string) {
 
 const requiredProviders = `terraform {
   required_providers {
-    pgs = { source = "registry.opentofu.org/local/pgs" }
+    pgs = { source = "innoq/pgs" }
   }
 }
 `

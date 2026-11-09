@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    pgs = { source = "registry.opentofu.org/local/pgs" }
+    pgs = { source = "innoq/pgs" }
   }
 }
 

@@ -6,9 +6,23 @@ pgs has no user API, so the provider edits pgs's SQLite database directly: `app_
 
 This project is independent. It is **not affiliated with or endorsed by pico.sh** (pico.sh LLC). "pico.sh" and "pgs" are used only to name the software this provider works with.
 
-## Installing locally
+## Installation
 
-The provider is not published to a registry yet, so build it and point OpenTofu/Terraform at the binary with `dev_overrides`. Requires Go and [just](https://github.com/casey/just).
+Published in the Terraform and OpenTofu registries:
+
+```hcl
+terraform {
+  required_providers {
+    pgs = { source = "innoq/pgs" }
+  }
+}
+```
+
+Then run `tofu init` (or `terraform init`).
+
+## Local development build
+
+Build the provider and point OpenTofu/Terraform at the binary with `dev_overrides`. Requires Go and [just](https://github.com/casey/just).
 
 1. Build into `./bin` (also builds the embedded SSH helpers, `just helpers`):
    ```sh
@@ -19,7 +33,7 @@ The provider is not published to a registry yet, so build it and point OpenTofu/
    # ~/.tofurc  (OpenTofu; use ~/.terraformrc for Terraform)
    provider_installation {
      dev_overrides {
-       "registry.opentofu.org/local/pgs" = "/absolute/path/to/terraform-provider-pgs/bin"
+       "registry.opentofu.org/innoq/pgs" = "/absolute/path/to/terraform-provider-pgs/bin"
      }
      direct {}
    }
@@ -28,17 +42,10 @@ The provider is not published to a registry yet, so build it and point OpenTofu/
    ```sh
    export TF_CLI_CONFIG_FILE=/absolute/path/to/terraform-provider-pgs/.tofurc.example   # after editing the path
    ```
-3. Declare the provider in your configuration, using the same address:
-   ```hcl
-   terraform {
-     required_providers {
-       pgs = { source = "registry.opentofu.org/local/pgs" }
-     }
-   }
-   ```
+3. Declare the provider in your configuration as usual (`source = "innoq/pgs"`).
 4. Run `tofu plan` / `tofu apply` directly. Skip `tofu init` for this provider: with `dev_overrides` OpenTofu prints a warning and uses the local binary without installing it. Re-run `just install` after changing the code.
 
-With Terraform instead of OpenTofu, the same works with the source `registry.opentofu.org/local/pgs`, since only the override key must match the source address.
+With Terraform instead of OpenTofu, use the key `registry.terraform.io/innoq/pgs` in `~/.terraformrc`.
 
 ## Compatibility
 

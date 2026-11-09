@@ -1,7 +1,7 @@
 # Use the locally built provider:  just install && TF_CLI_CONFIG_FILE=$PWD/.tofurc.example tofu plan
 provider_installation {
   dev_overrides {
-    "registry.opentofu.org/local/pgs" = "/ABSOLUTE/PATH/TO/terraform-provider-pgs/bin"
+    "registry.opentofu.org/innoq/pgs" = "/ABSOLUTE/PATH/TO/terraform-provider-pgs/bin"
   }
   direct {}
 }

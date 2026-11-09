@@ -14,7 +14,7 @@ Manages accounts of a self-hosted pico.sh pgs installation by editing its SQLite
 ```terraform
 terraform {
   required_providers {
-    pgs = { source = "registry.opentofu.org/local/pgs" }
+    pgs = { source = "innoq/pgs" }
   }
 }
 

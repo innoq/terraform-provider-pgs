@@ -18,7 +18,7 @@ func main() {
 	flag.Parse()
 
 	err := providerserver.Serve(context.Background(), provider.New(version), providerserver.ServeOpts{
-		Address: "registry.opentofu.org/local/pgs",
+		Address: "registry.terraform.io/innoq/pgs",
 		Debug:   debug,
 	})
 	if err != nil {
