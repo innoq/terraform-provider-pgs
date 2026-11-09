@@ -22,8 +22,24 @@ jobs:
       - run: just lint
       - run: just test
 
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          install_args: go just opentofu
+      - run: just e2e-all
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-logs
+          path: test/e2e/.logs/
+          include-hidden-files: true # .logs is a hidden directory, skipped by default
+
   goreleaser:
-    needs: test
+    needs: [test, e2e]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
