@@ -92,6 +92,13 @@ func run(m *testing.M) int {
 		return 1
 	}
 	defer func() {
+		// With a rootful docker pgs writes root-owned files (storage buckets) that the host user cannot
+		// remove. Empty the directory from the dbhost container, which is root and mounts the same
+		// directory; otherwise stale buckets leak into the next pgs version's run (user ids restart at 1)
+		// and fill its quota.
+		if out, err := compose("exec", "-T", "dbhost", "find", "/data", "-mindepth", "1", "-delete"); err != nil {
+			fmt.Printf("clean data dir: %v\n%s\n", err, out)
+		}
 		if out, err := compose("down", "-v"); err != nil {
 			fmt.Printf("compose down: %v\n%s\n", err, out)
 		}
