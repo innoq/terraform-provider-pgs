@@ -1,4 +1,4 @@
-tofu := `command -v tofu`
+tofu := `command -v tofu || true`
 acc_env := "TF_ACC=1 TF_ACC_TERRAFORM_PATH=" + tofu + " TF_ACC_PROVIDER_HOST=registry.opentofu.org TF_ACC_PROVIDER_NAMESPACE=innoq"
 
 default:
