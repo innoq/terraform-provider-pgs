@@ -1,0 +1,49 @@
+# Publishes a release when a version tag (v1.2.3) is pushed. The registries pick up the signed GitHub release.
+# Required repository secrets: GPG_PRIVATE_KEY (ASCII-armored) and PASSPHRASE.
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2 # installs the versions pinned in mise.toml
+        with:
+          install_args: go just opentofu
+      - run: just lint
+      - run: just test
+
+  goreleaser:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: jdx/mise-action@v2 # `just`, used by the goreleaser before-hook that builds the SSH helpers
+        with:
+          install_args: just
+      - uses: crazy-max/ghaction-import-gpg@v6
+        id: import_gpg
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

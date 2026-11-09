@@ -1,0 +1,6 @@
+# pgs image tags (ghcr.io/picosh/pgs) that `just e2e-all` tests the provider against, one per line.
+# These are the versions the README declares as supported. To try another version once:
+#   PGS_IMAGE=ghcr.io/picosh/pgs:<tag> just e2e
+# (the suite adapts to what that pgs version can do, see the `caps` type in e2e_test.go).
+v4.1.0
+v4.1.2

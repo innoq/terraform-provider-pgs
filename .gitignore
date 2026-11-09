@@ -1,0 +1,32 @@
+# Build output
+/bin/
+/dist/
+/terraform-provider-pgs
+/internal/helperbin/bin/*
+!/internal/helperbin/bin/.gitkeep
+*.test
+*.out
+
+# OpenTofu / Terraform working files
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.tofurc
+.terraformrc
+
+# e2e scratch data, generated per run (SQLite DB, throwaway SSH key)
+/test/e2e/.data/
+/test/e2e/.ssh/
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+/test/e2e/.logs/

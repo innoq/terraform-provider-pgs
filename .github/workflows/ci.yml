@@ -1,0 +1,39 @@
+# Unit, acceptance and e2e tests (real pgs containers) on pull requests and on pushes to main.
+# Pushes to other branches are covered by their pull request, so nothing runs twice.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2 # installs the versions pinned in mise.toml
+        with:
+          install_args: go just opentofu
+      - run: just lint
+      - run: just test
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          install_args: go just opentofu
+      - run: just e2e-all
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-logs
+          path: test/e2e/.logs/

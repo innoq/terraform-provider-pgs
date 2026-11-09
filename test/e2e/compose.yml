@@ -1,0 +1,22 @@
+# End-to-end stack: a real pgs server plus an "SSH host" that has sqlite3 and mounts the same data directory.
+services:
+  pgs:
+    image: ${PGS_IMAGE:-ghcr.io/picosh/pgs:v4.1.2}
+    environment:
+      DATABASE_URL: /app/data/pgs.sqlite3
+      STORAGE_ADAPTER: fs
+      FS_STORAGE_DIR: /app/data/storage
+      PGS_DOMAIN: pgs.test
+      PGS_PROTOCOL: http
+    ports:
+      - "127.0.0.1:${PGS_SSH_PORT:-2222}:2222"
+      - "127.0.0.1:${PGS_WEB_PORT:-3000}:3000"
+    volumes:
+      - ./.data:/app/data:Z
+  dbhost:
+    build: ./dbhost
+    ports:
+      - "127.0.0.1:${DBHOST_SSH_PORT:-2223}:22"
+    volumes:
+      - ./.data:/data:Z
+      - ./.ssh/authorized_keys:/etc/ssh/authorized_keys/root:ro,Z
