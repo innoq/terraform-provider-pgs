@@ -37,3 +37,4 @@ jobs:
         with:
           name: e2e-logs
           path: test/e2e/.logs/
+          include-hidden-files: true # .logs is a hidden directory, skipped by default
