@@ -88,4 +88,5 @@ jobs:
             -F "projectName=terraform-provider-pgs" \
             -F "projectVersion=${VERSION}" \
             -F "isLatest=true" \
+            -F "parentUUID=62f7a18e-db77-4393-8611-3360e2e0f742" \
             -F "bom=@bom.json"
