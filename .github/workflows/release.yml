@@ -1,5 +1,5 @@
 # Publishes a release when a version tag (v1.2.3) is pushed. The registries pick up the signed GitHub release.
-# Required repository secrets: GPG_PRIVATE_KEY (ASCII-armored) and PASSPHRASE.
+# Required repository secrets: GPG_PRIVATE_KEY (ASCII-armored), PASSPHRASE and DEPENDENCY_TRACK_API_KEY.
 name: release
 
 on:
@@ -63,3 +63,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+
+  # Publishes the SBOM of the tagged version to Dependency Track.
+  sbom:
+    needs: [test, e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          install_args: go
+      - name: Generate CycloneDX SBOM
+        run: go run github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.9.0 mod -licenses -json -output bom.json
+      - name: Upload SBOM to Dependency Track
+        env:
+          DT_API_KEY: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            -X POST "https://dependencytrack.innoq.io/api/v1/bom" \
+            -H "X-Api-Key: ${DT_API_KEY}" \
+            -F "autoCreate=true" \
+            -F "projectName=terraform-provider-pgs" \
+            -F "projectVersion=${VERSION}" \
+            -F "isLatest=true" \
+            -F "bom=@bom.json"
