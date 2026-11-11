@@ -38,3 +38,30 @@ jobs:
           name: e2e-logs
           path: test/e2e/.logs/
           include-hidden-files: true # .logs is a hidden directory, skipped by default
+
+  # Publishes the SBOM of main to Dependency Track once the tests pass.
+  # Required repository secret: DEPENDENCY_TRACK_API_KEY (team key with BOM_UPLOAD and PROJECT_CREATION_UPLOAD).
+  sbom:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test, e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          install_args: go
+      - name: Generate CycloneDX SBOM
+        run: go run github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@v1.9.0 mod -licenses -json -output bom.json
+      - name: Upload SBOM to Dependency Track
+        env:
+          DT_API_KEY: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            -X POST "https://dependencytrack.innoq.io/api/v1/bom" \
+            -H "X-Api-Key: ${DT_API_KEY}" \
+            -F "autoCreate=true" \
+            -F "projectName=terraform-provider-pgs" \
+            -F "projectVersion=main" \
+            -F "isLatest=true" \
+            -F "bom=@bom.json"
