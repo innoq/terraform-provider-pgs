@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2 # installs the versions pinned in mise.toml
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5 # installs the versions pinned in mise.toml
         with:
           install_args: go just opentofu
       - run: just lint
@@ -26,12 +26,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
         with:
           install_args: go just opentofu
       - run: just e2e-all
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: e2e-logs
@@ -42,21 +42,21 @@ jobs:
     needs: [test, e2e]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
-      - uses: jdx/mise-action@v2 # `just`, used by the goreleaser before-hook that builds the SSH helpers
+      - uses: jdx/mise-action@v5 # `just`, used by the goreleaser before-hook that builds the SSH helpers
         with:
           install_args: just
-      - uses: crazy-max/ghaction-import-gpg@v6
+      - uses: crazy-max/ghaction-import-gpg@v7
         id: import_gpg
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-      - uses: goreleaser/goreleaser-action@v6
+      - uses: goreleaser/goreleaser-action@v7
         with:
           version: '~> v2'
           args: release --clean
@@ -70,8 +70,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
         with:
           install_args: go
       - name: Generate CycloneDX SBOM

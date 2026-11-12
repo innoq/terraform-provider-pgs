@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM alpine:3.24
 RUN apk add --no-cache openssh-server sqlite \
  && ssh-keygen -A \
  && printf 'PermitRootLogin prohibit-password\nPasswordAuthentication no\nStrictModes no\nAuthorizedKeysFile /etc/ssh/authorized_keys/%%u\n' | cat - /etc/ssh/sshd_config > /tmp/sshd_config \

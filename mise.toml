@@ -1,5 +1,5 @@
 [tools]
-go = "1.27.3"
+go = "1.27.4"
 just = "1.59.0"
-opentofu = "1.13.2"
-goreleaser = "2.20.0"
+opentofu = "1.13.9"
+goreleaser = "2.20.1"

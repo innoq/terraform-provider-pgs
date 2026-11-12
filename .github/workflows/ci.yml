@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2 # installs the versions pinned in mise.toml
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5 # installs the versions pinned in mise.toml
         with:
           install_args: go just opentofu
       - run: just lint
@@ -27,12 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
         with:
           install_args: go just opentofu
       - run: just e2e-all
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: e2e-logs
